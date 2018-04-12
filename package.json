@@ -1,0 +1,16 @@
+{
+  "name": "poc_respi",
+  "version": "1.0.0",
+  "description": "Proof of Concept for Breathing Game GJ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "DamiFa",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.5.8",
+    "express": "^4.16.3",
+    "paper": "^0.11.5"
+  }
+}
