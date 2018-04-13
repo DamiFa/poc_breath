@@ -1,5 +1,4 @@
 var path = new Path();
-var breathStrength = 1;
 
 var CP = {
     x: view.center.x,
@@ -11,16 +10,15 @@ var speed = 1;
 var output = document.querySelector("#output");
 
 function initializePath() {
-    center = CP;
 	path.segments = [];
 	for (var i = 0; i < 100; i++) {
 
         var tP = new paper.Point({
-            length: 1 * i + 200,
+            length: 1 * i + 20,
             angle: 10 * i
         });
         
-        tP.x = tP.x + CP.x;
+        tP.x = tp.x + CP.x;
         tP.y = tP.y + CP.y;
         
 		path.add(tP);
@@ -59,14 +57,8 @@ view.onMouseMove = function(event){
     output.innerHTML ="x:" + mousePoint.x + ", y:" + mousePoint.y + ", speed: " + speed;
 };
 
-/* document.addEventListener('keydown', (event) => {
-    var keyName = event.key;
-    if(keyName == "space") initializePath();
-    console.log(keyName);
-}); */
-
 view.onFrame = function(event){
-    wobble(path, event, speed);
+    // wobble(path, event, speed);
 };
 
 view.onResize = function(){
