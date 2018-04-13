@@ -5,16 +5,16 @@ var pointCount = 100;
 var step = view.viewSize.width / pointCount;
 var previousMousePoint;
 var mousePoint;
+var volume = 0;
 var speed = 1;
+var isBreathing = false;
 var output = document.querySelector("#output");
 var input1 = document.querySelector("#input1");
 var input2 = document.querySelector("#input2");
-
 var CP = {
     x: 0,
     y: view.center.y,
 };
-
 var values = {
     force: 0.6
 }
@@ -31,7 +31,6 @@ function initializePath(){
         });
         
         path.add(tP);
-
         pathIni.add(tP)
         pathTarget.add(tP);
     }
@@ -40,29 +39,24 @@ function initializePath(){
         strokeColor: 'red',
         strokeWidth: 5
     };
-    pathIni.style = {
-        strokeColor: 'green',
-        strokeWidth: 2
-    };
-    pathTarget.style = {
-        strokeColor: 'orange',
-        strokeWidth: 2
-    };
-
-    path.smooth({ type: 'continuous' });
-    // path.fullySelected = true;
+    // pathTarget.style = {
+    //     strokeColor: 'green',
+    //     strokeWidth: 2
+    // };
 }
-
 
 function interpolate (){
     for(var i = 0; i < path.segments.length; i++){
         path.segments[i].point.y += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).y * values.force/10; 
+        path.segments[i].point.x += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).x * values.force/10; 
     }
+
+    path.smooth({ type: 'continuous' });
 }
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + Math.sin((event.count + i) / input1.value) * input2.value;
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * speed);
     }
 }
 
@@ -84,17 +78,24 @@ function setPos(path){
     }
 }
 
+function getSpeed(){
+    // return Math.min(speed, 5);
+    return meter ? meter.volume : 0;
+}
+
 view.onMouseMove = function(event){
     previousMousePoint = mousePoint || CP;
     mousePoint = event.point;
     speed = getDistance(previousMousePoint, mousePoint);
+
+    event.stopPropagation();
 };
 
 view.onFrame = function(event){
-    // wobble(path, event, speed);
-    interpolate();
     output.innerHTML ="input1: " + input1.value + ", input2: " + input2.value + ", speed: " + speed;
-    if(Key.isDown("space")) setPos(pathTarget);
+    // if(Key.isDown("space")) setPos(pathTarget);
+    wobble(path, event, getSpeed());
+    interpolate();
 }
 
 initializePath();
