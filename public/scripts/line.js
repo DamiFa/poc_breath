@@ -92,7 +92,7 @@ view.onMouseMove = function(event){
 };
 
 view.onFrame = function(event){
-    output.innerHTML ="input1: " + input1.value + ", input2: " + input2.value + ", speed: " + speed;
+    output.innerHTML ="input1: " + input1.value + ", input2: " + input2.value + ", breath intensity: " + getSpeed();
     // if(Key.isDown("space")) setPos(pathTarget);
     wobble(path, event, getSpeed());
     interpolate();
