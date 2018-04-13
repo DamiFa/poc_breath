@@ -26,7 +26,7 @@ function onMicrophoneGranted(stream) {
     // Create an AudioNode from the stream.
     mediaStreamSource = audioContext.createMediaStreamSource(stream);
     // Create a new volume meter and connect it.
-    meter = createAudioMeter(audioContext);
+    meter = createAudioMeter(audioContext, 3);
     mediaStreamSource.connect(meter);
 
     // Trigger callback that shows the level of the "Volume Meter"

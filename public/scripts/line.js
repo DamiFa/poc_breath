@@ -7,7 +7,6 @@ var previousMousePoint;
 var mousePoint;
 var volume = 0;
 var speed = 1;
-var isBreathing = false;
 var output = document.querySelector("#output");
 var input1 = document.querySelector("#input1");
 var input2 = document.querySelector("#input2");
@@ -56,7 +55,7 @@ function interpolate (){
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * speed);
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * getSpeed());
     }
 }
 
@@ -80,7 +79,7 @@ function setPos(path){
 
 function getSpeed(){
     // return Math.min(speed, 5);
-    return meter ? meter.volume : 0;
+    return meter ? Math.pow(meter.volume, 2) : 0;
 }
 
 view.onMouseMove = function(event){
