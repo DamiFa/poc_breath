@@ -14,11 +14,12 @@ var miscValues = {
 };
 
 function initializePath(){
+    breathValues.maxBreath = view.viewSize.height / (2 * 30)
     path.segments = [];
     pathIni.segments = [];
     pathTarget.segments = [];
 
-    for(var i = 1; i < pointCount; i++){
+    for(var i = 0; i < pointCount; i++){
         var tP = new paper.Point({
             x: i * step + CP.x,
             y: CP.y
@@ -50,7 +51,7 @@ function interpolate (){
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / 6)  * 25 * getBreath());
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / 2)  * 25 * getBreath()* Math.sin((i/path.segments.length) * Math.PI));
     }
 }
 
