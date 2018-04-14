@@ -9,7 +9,7 @@ canvas{
     z-index: 2;
 }
 
-#inputs, h2{
+h2{
     z-index: 1;
     position: absolute;
     color: black;

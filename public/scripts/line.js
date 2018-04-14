@@ -3,26 +3,15 @@ var pathIni = new Path();
 var pathTarget = new Path();
 var pointCount = 100;
 var step = view.viewSize.width / pointCount;
-var previousMousePoint;
-var mousePoint;
-var volume = 0;
-var breath = 0;
-var breathingDelay = 0;
 var output = document.querySelector("#output");
-var input1 = document.querySelector("#input1");
-var input2 = document.querySelector("#input2");
+var output2 = document.querySelector("#output2");
 var CP = {
     x: 0,
     y: view.center.y,
 };
-var values = {
-    force: 0.6,
-    soundThreshold : 0.1,
-    breathThreshold : 0.6,
-    breathDelta : 0.0005,
-    // 0.0001 min avant que la courbe ne bouge plus
-    maxBreath: 6
-}
+var miscValues = {
+    force: 0.6
+};
 
 function initializePath(){
     path.segments = [];
@@ -52,8 +41,8 @@ function initializePath(){
 
 function interpolate (){
     for(var i = 0; i < path.segments.length; i++){
-        path.segments[i].point.y += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).y * values.force/10; 
-        path.segments[i].point.x += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).x * values.force/10; 
+        path.segments[i].point.y += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).y * miscValues.force/10; 
+        path.segments[i].point.x += getDeltaPos(pathTarget.segments[i].point, path.segments[i].point).x * miscValues.force/10; 
     }
 
     path.smooth({ type: 'continuous' });
@@ -61,7 +50,7 @@ function interpolate (){
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * getBreath());
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / 6)  * 25 * getBreath());
     }
 }
 
@@ -77,24 +66,10 @@ function getDistance(pointA, pointB){
     return res;
 }
 
-function getBreath(){
-    breath = meter ? meter.volume : breath;
-
-    var distance = values.maxBreath - breathingDelay;
-
-    if(breath > values.breathThreshold){
-        breathingDelay += values.breathDelta * distance;
-    }
-    else {
-        breathingDelay -= values.breathDelta * breathingDelay;
-    }
-
-    return breathingDelay;
-}
-
 view.onFrame = function(event){
-    output.innerHTML = "breath intensity: " + getBreath();
-    // if(Key.isDown("space")) setPos(pathTarget);
+    var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000
+    output.innerHTML = "breath duration: " + breathing.delay + "<br>breath intensity: " + displayBreathingMaxVolume;
+    // output2.innerHTML = "Best breath duration: " + breathing.bestDelay + "<br>Best breath intensity: " + breathing.bestMaxVolume
     wobble(path, event, getBreath());
     interpolate();
 }

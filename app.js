@@ -7,7 +7,7 @@ var games = [{
     },
     {
         name: "circle",
-        path: "/scipts/circle.js"
+        path: "/scripts/circle.js"
     }
 ];
 
