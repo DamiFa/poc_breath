@@ -1,5 +1,6 @@
 var path = new Path();
-var pathIni = new Path();
+var bumpers = [];
+var goalCirclePath = new Path();
 var pathTarget = new Path();
 var output = document.querySelector("#output");
 var CP = {
@@ -7,13 +8,48 @@ var CP = {
     y: view.center.y,
 };
 var miscValues = {
-    force: 0.6,
-    forceToIni : 0.7
+    force: 0.96,
+    forceToIni : 0.85
 }
 var circleValues = {
     pointCount: 20,
     radius: 50
 }
+var goalCircleValues = {
+    pointCount: 20,
+    radius: 300
+}
+var bumpersData = [{
+        pos: new Point(280, 450),
+        color : "red",
+        intersectColor : function(){return "pink"},
+        sound: new Howl({
+            src: ['/sounds/bubbles.mp3'],
+            loop: false
+        }),
+        size: 20
+    },
+    {
+        pos: new Point(200, 250),
+        color : "green",
+        intersectColor : function(){return "brown"},
+        sound: new Howl({
+            src: ['/sounds/bubbles.mp3'],
+            loop: false
+        }),
+        size: 30
+    },
+    {
+        pos: new Point(360, 390),
+        color : "yellow",
+        intersectColor : function(){return "orange"},
+        sound: new Howl({
+            src: ['/sounds/bubbles.mp3'],
+            loop: false
+        }),
+        size: 10
+    }
+]
 circleValues.angle = 2*Math.PI/ circleValues.pointCount;
 circleValues.getX = function(increment, delta){
     return circleValues.radius * delta * Math.cos(circleValues.angle * increment) + CP.x;
@@ -22,10 +58,31 @@ circleValues.getY = function(increment, delta){
     return circleValues.radius * delta * Math.sin(circleValues.angle * increment) + CP.y;
 };
 
+function initializeBumpers(){
+    for(var i = 0; i < bumpersData.length; i++){
+        var tempBumper = {};
+        tempBumper.id = i;
+        tempBumper.path = new Path.Circle(bumpersData[i].pos, bumpersData[i].size);
+        tempBumper.intersects = false;
+        tempBumper.path.fillColor = bumpersData[i].color;
+
+        tempBumper.onEnter = function (){
+            this.path.fillColor = bumpersData[this.id].intersectColor();
+            bumpersData[this.id].sound.play();
+        }
+        tempBumper.onExit = function (){
+            this.path.fillColor = bumpersData[this.id].color;
+        }
+
+        bumpers.push(tempBumper);
+    }
+
+    console.log(bumpers[0].onEnter);
+}
+
 function initializePath(){
-    breathValues.maxBreath = view.viewSize.height / (125);
+    breathValues.maxBreath = view.viewSize.height / (600);
     path.segments = [];
-    pathIni.segments = [];
     pathTarget.segments = [];
 
     for(var i = 0; i < circleValues.pointCount; i++){
@@ -35,13 +92,13 @@ function initializePath(){
         });
         
         path.add(tP);
-        pathIni.add(tP)
+        goalCirclePath.add(tP)
         pathTarget.add(tP);
     }
 
     path.closePath();
     pathTarget.closePath();
-    pathIni.closePath();
+    goalCirclePath.closePath();
 
     path.style = {
         strokeColor: 'red',
@@ -56,10 +113,6 @@ function initializePath(){
     //     strokeColor: 'orange',
     //     strokeWidth: 2
     // };
-    // pathIni.style = {
-    //     strokeColor: 'green',
-    //     strokeWidth: 2
-    // };
 }
 
 function interpolate (pathToMove, pathToTarget, interpolateForce){
@@ -71,10 +124,11 @@ function interpolate (pathToMove, pathToTarget, interpolateForce){
     pathToMove.smooth({ type: 'continuous' });
 }
 
-function wobble (path, event, speed){
+function wobble (path, event){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = circleValues.getY(i, getBreath()+1);
-        pathTarget.segments[i].point.x = circleValues.getX(i, getBreath()+1);
+        var deltaToAdd = (getBreath() + 0.01) * 6 + (Math.sin(Math.random()) + 1);
+        pathTarget.segments[i].point.y = circleValues.getY(i, deltaToAdd);
+        pathTarget.segments[i].point.x = circleValues.getX(i, deltaToAdd);
     }
 }
 
@@ -90,13 +144,27 @@ function getDistance(pointA, pointB){
     return res;
 }
 
+function interstectHandler(){
+    for(var i = 0; i < bumpers.length; i++){
+        if(bumpers[i].path.intersects(path)) {
+            if(!bumpers[i].intersects) bumpers[i].onEnter();
+            bumpers[i].intersects = true;
+        }
+        else{
+            if(bumpers[i].intersects) bumpers[i].onExit();
+            bumpers[i].intersects = false;
+        }
+    }
+}
+
 view.onFrame = function(event){
     var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000
     output.innerHTML = "breath duration: " + breathing.delay + "<br>breath intensity: " + displayBreathingMaxVolume;
     // if(Key.isDown("space")) setPos(pathTarget);
-    wobble(path, event, getBreath());
+    wobble(path, event);
     interpolate(path, pathTarget, miscValues.force);
-    interpolate(pathTarget, pathIni, miscValues.forceToIni);
+    interstectHandler();
 }
 
 initializePath();
+initializeBumpers();
