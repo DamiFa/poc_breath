@@ -14,3 +14,7 @@ canvas{
     position: absolute;
     color: black;
 }
+
+.margin-auto{
+    margin: auto;
+}

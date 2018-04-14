@@ -1,10 +1,11 @@
 <% include ./partials/header %>
 
-<h2 id="output"></h2>
+<h2 id="output" class="mt-3"></h2>
 <div id="inputs">
     <input id ="input1" type="range" min="0" max="5" step="0.5">
     <input id="input2" type="range" min="0" max="50" step="0.5">
 </div>
 <canvas id="my-canvas"></canvas>
 
+<script type="text/paperscript" src="<%= game.path %>" canvas="my-canvas"></script>
 <% include ./partials/footer %>

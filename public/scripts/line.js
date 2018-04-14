@@ -6,7 +6,8 @@ var step = view.viewSize.width / pointCount;
 var previousMousePoint;
 var mousePoint;
 var volume = 0;
-var speed = 1;
+var breath = 0;
+var breathingDelay = 0;
 var output = document.querySelector("#output");
 var input1 = document.querySelector("#input1");
 var input2 = document.querySelector("#input2");
@@ -15,7 +16,12 @@ var CP = {
     y: view.center.y,
 };
 var values = {
-    force: 0.6
+    force: 0.6,
+    soundThreshold : 0.1,
+    breathThreshold : 0.6,
+    breathDelta : 0.0005,
+    // 0.0001 min avant que la courbe ne bouge plus
+    maxBreath: 6
 }
 
 function initializePath(){
@@ -55,7 +61,7 @@ function interpolate (){
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * getSpeed());
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / input1.value) * input2.value * getBreath());
     }
 }
 
@@ -71,29 +77,25 @@ function getDistance(pointA, pointB){
     return res;
 }
 
-function setPos(path){
-    for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = (Math.random()-0.5)*200 + CP.y;
+function getBreath(){
+    breath = meter ? meter.volume : breath;
+
+    var distance = values.maxBreath - breathingDelay;
+
+    if(breath > values.breathThreshold){
+        breathingDelay += values.breathDelta * distance;
     }
+    else {
+        breathingDelay -= values.breathDelta * breathingDelay;
+    }
+
+    return breathingDelay;
 }
-
-function getSpeed(){
-    // return Math.min(speed, 5);
-    return meter ? Math.pow(meter.volume, 2) : 0;
-}
-
-view.onMouseMove = function(event){
-    previousMousePoint = mousePoint || CP;
-    mousePoint = event.point;
-    speed = getDistance(previousMousePoint, mousePoint);
-
-    event.stopPropagation();
-};
 
 view.onFrame = function(event){
-    output.innerHTML ="input1: " + input1.value + ", input2: " + input2.value + ", breath intensity: " + getSpeed();
+    output.innerHTML = "breath intensity: " + getBreath();
     // if(Key.isDown("space")) setPos(pathTarget);
-    wobble(path, event, getSpeed());
+    wobble(path, event, getBreath());
     interpolate();
 }
 
