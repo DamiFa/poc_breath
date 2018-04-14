@@ -2,11 +2,11 @@ var express = require("express"),
     app     = express();
 
 var games = [{
-        name: "line",
+        name: "Line",
         path: "/scripts/line.js"
     },
     {
-        name: "circle",
+        name: "Circle",
         path: "/scripts/circle.js"
     }
 ];

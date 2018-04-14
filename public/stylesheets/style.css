@@ -6,13 +6,21 @@ html, body{
 canvas{
     height: 100%;
     width: 100%;
-    z-index: 2;
 }
 
-h2{
-    z-index: 1;
-    position: absolute;
-    color: black;
+#button-bg.btn-primary, #button-bg.btn-primary:hover, #button-bg.btn-primary:focus{
+    background-color: #04c49b;
+    border-color: #04c49b;
+}
+
+#button-bg.btn-primary:active{
+    background-color: #04c49c;
+    border-color: #04c49b;
+}
+
+.image img{
+    width: 100%;
+    height: auto;
 }
 
 .margin-auto{

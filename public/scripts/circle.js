@@ -3,6 +3,7 @@ var bumpers = [];
 var goalCirclePath = new Path();
 var pathTarget = new Path();
 var output = document.querySelector("#output");
+var output2 = document.querySelector("#output2");
 var CP = {
     x: view.center.x,
     y: view.center.y,
@@ -20,11 +21,11 @@ var goalCircleValues = {
     radius: 300
 }
 var bumpersData = [{
-        pos: new Point(280, 450),
+        pos: new Point(90 + CP.x, 100 + CP.y),
         color : "red",
         intersectColor : function(){return "pink"},
         sound: new Howl({
-            src: ['/sounds/bubbles.mp3'],
+            src: ['/sounds/corona.mp3'],
             loop: false
         }),
         size: 20
@@ -34,13 +35,13 @@ var bumpersData = [{
         color : "green",
         intersectColor : function(){return "brown"},
         sound: new Howl({
-            src: ['/sounds/bubbles.mp3'],
+            src: ['/sounds/piston-1.mp3'],
             loop: false
         }),
         size: 30
     },
     {
-        pos: new Point(360, 390),
+        pos: new Point(860, 390),
         color : "yellow",
         intersectColor : function(){return "orange"},
         sound: new Howl({
@@ -81,7 +82,7 @@ function initializeBumpers(){
 }
 
 function initializePath(){
-    breathValues.maxBreath = view.viewSize.height / (600);
+    breathValues.maxBreath = view.viewSize.height / (700);
     path.segments = [];
     pathTarget.segments = [];
 
@@ -158,9 +159,10 @@ function interstectHandler(){
 }
 
 view.onFrame = function(event){
-    var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000
-    output.innerHTML = "breath duration: " + breathing.delay + "<br>breath intensity: " + displayBreathingMaxVolume;
-    // if(Key.isDown("space")) setPos(pathTarget);
+    var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000;
+    var displayBreathingBestMaxVolume = Math.round(breathing.bestMaxVolume*100000)/10000;
+    output.innerHTML = "Breath duration:<br>" + breathing.delay + " / Best: " + breathing.bestDelay;
+    output2.innerHTML = "Breath intensity:<br>" + displayBreathingMaxVolume + "/ Best: " + displayBreathingBestMaxVolume;
     wobble(path, event);
     interpolate(path, pathTarget, miscValues.force);
     interstectHandler();

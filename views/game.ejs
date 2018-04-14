@@ -1,13 +1,30 @@
 <% include ./partials/header %>
 
-<div class="container-flex">
-    <h2 id="output"></h2>
-    <!-- <h2 id="output2"></h2> -->
-    
-    <h1 class="fixed-bottom">BLOW TOWARD YOUR MICROPHONE <i class="fas fa-arrow-down"></i></h1>
+<script type="text/javascript" src="/scripts/audioVolume.js"></script>
+<script type="text/javascript" src="/scripts/microphone.js"></script>
+<script type="text/javascript" src="/scripts/breathManager.js" ></script>
+
+<div class="container h-100">    
+    <div class="row h-100">
+        <div class="col-md-3">
+            <div class="h-25">
+                <h2>BREATHING GAMES</h2>
+                <a href="/" id="button-bg" class="btn btn-primary btn-sm">Go Back</a>
+            </div>
+            <div class="h-50">
+                <p id="output"></p>
+                <p id="output2"></p>
+            </div>
+            <div class="h-25">
+                <h3>BLOW TOWARDS YOUR MICROPHONE <i class="fas fa-arrow-down"></i></h3>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <canvas id="my-canvas"></canvas>
+        </div>
+    </div>
 </div>
 
-<canvas id="my-canvas"></canvas>
 
 <script type="text/paperscript" src="<%= game.path %>" canvas="my-canvas"></script>
 

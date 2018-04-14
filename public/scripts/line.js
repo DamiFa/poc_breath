@@ -68,9 +68,10 @@ function getDistance(pointA, pointB){
 }
 
 view.onFrame = function(event){
-    var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000
-    output.innerHTML = "breath duration: " + breathing.delay + "<br>breath intensity: " + displayBreathingMaxVolume;
-    // output2.innerHTML = "Best breath duration: " + breathing.bestDelay + "<br>Best breath intensity: " + breathing.bestMaxVolume
+    var displayBreathingMaxVolume = Math.round(breathing.maxVolume*100000)/10000;
+    var displayBreathingBestMaxVolume = Math.round(breathing.bestMaxVolume*100000)/10000;
+    output.innerHTML = "Breath duration:<br>" + breathing.delay + " / Best: " + breathing.bestDelay;
+    output2.innerHTML = "Breath intensity:<br>" + displayBreathingMaxVolume + "/ Best: " + displayBreathingBestMaxVolume;
     wobble(path, event, getBreath());
     interpolate();
 }

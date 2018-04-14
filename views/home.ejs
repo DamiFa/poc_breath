@@ -1,12 +1,16 @@
 <% include ./partials/header %>
 
 <div class="container">
-    <div class="row">
-        <div class="col-lg-8 justify-content-center">
-            <h1>HOME</h1>
+    <div class="row justify-content-center">
+        <div class="col-lg-5 text-center">
+            <h1 class="mb-4 mt-3">BREATHING GAMES</h1>
             <% games.forEach(function(game, i){ %>
-                <a href="/game/<%= i %>" class="btn btn-secondary">Go to <%= game.name %></a>
+                <a href="/game/<%= i %>" id="button-bg" class="btn btn-primary btn-block"><%= game.name %></a>
             <% }); %>
+
+            <div class="image mt-2">
+                <img src="/images/bg.png" alt="">
+            </div>
         </div>
     </div>
 </div>
