@@ -1,6 +1,10 @@
 var path = new Path();
 var pathIni = new Path();
 var pathTarget = new Path();
+
+var defaultViewSize = 1014;
+var scaleFacViewSIze;
+
 var pointCount = 100;
 var step = view.viewSize.width / pointCount;
 var output = document.querySelector("#output");
@@ -14,7 +18,9 @@ var miscValues = {
 };
 
 function initializePath(){
-    breathValues.maxBreath = view.viewSize.height / (2 * 30)
+    // breathValues.maxBreath = 80;
+    scaleFacViewSIze = defaultViewSize / view.viewSize.height;
+    breathValues.maxBreath = 450 * scaleFacViewSIze;
     path.segments = [];
     pathIni.segments = [];
     pathTarget.segments = [];
@@ -51,7 +57,8 @@ function interpolate (){
 
 function wobble (path, event, speed){
     for(var i = 0; i < path.segments.length; i++){
-        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / 2)  * 25 * getBreath()* Math.sin((i/path.segments.length) * Math.PI));
+        var lineCurveCurve = Math.sin((i/path.segments.length) * Math.PI);
+        pathTarget.segments[i].point.y = pathIni.segments[i].point.y + (Math.sin((i) / 2)  * getBreath() * lineCurveCurve);
     }
 }
 
@@ -74,6 +81,7 @@ view.onFrame = function(event){
     output2.innerHTML = "Breath intensity:<br>" + displayBreathingMaxVolume + "/ Best: " + displayBreathingBestMaxVolume;
     wobble(path, event, getBreath());
     interpolate();
+    console.log(getBreath());
 }
 
 initializePath();

@@ -1,6 +1,8 @@
 var path = new Path();
+var defaultViewSize = 1014;
+var scaleFacViewSize;
+
 var bumpers = [];
-var goalCirclePath = new Path();
 var pathTarget = new Path();
 var output = document.querySelector("#output");
 var output2 = document.querySelector("#output2");
@@ -39,25 +41,9 @@ var bumpersData = [{
             loop: false
         }),
         size: 30
-    },
-    {
-        pos: new Point(860, 390),
-        color : "yellow",
-        intersectColor : function(){return "orange"},
-        sound: new Howl({
-            src: ['/sounds/bubbles.mp3'],
-            loop: false
-        }),
-        size: 10
     }
 ]
 circleValues.angle = 2*Math.PI/ circleValues.pointCount;
-circleValues.getX = function(increment, delta){
-    return circleValues.radius * delta * Math.cos(circleValues.angle * increment) + CP.x;
-};
-circleValues.getY = function(increment, delta){
-    return circleValues.radius * delta * Math.sin(circleValues.angle * increment) + CP.y;
-};
 
 function initializeBumpers(){
     for(var i = 0; i < bumpersData.length; i++){
@@ -77,29 +63,35 @@ function initializeBumpers(){
 
         bumpers.push(tempBumper);
     }
-
-    console.log(bumpers[0].onEnter);
 }
 
 function initializePath(){
-    breathValues.maxBreath = view.viewSize.height / (700);
+    scaleFacViewSize = view.viewSize.height / defaultViewSize;
+    breathValues.maxBreath = 8 * scaleFacViewSize;
     path.segments = [];
     pathTarget.segments = [];
 
+    console.log(scaleFacViewSize);
+
+    circleValues.getX = function(increment){
+        return circleValues.radius * scaleFacViewSize * Math.cos(circleValues.angle * increment) + CP.x;
+    };
+    circleValues.getY = function(increment){
+        return circleValues.radius * scaleFacViewSize * Math.sin(circleValues.angle * increment) + CP.y;
+    };
+
     for(var i = 0; i < circleValues.pointCount; i++){
         var tP = new paper.Point({
-            x: circleValues.getX(i, 1),
-            y: circleValues.getY(i, 1)
+            x: circleValues.getX(i),
+            y: circleValues.getY(i)
         });
         
         path.add(tP);
-        goalCirclePath.add(tP)
         pathTarget.add(tP);
     }
 
     path.closePath();
     pathTarget.closePath();
-    goalCirclePath.closePath();
 
     path.style = {
         strokeColor: 'red',
@@ -125,11 +117,16 @@ function interpolate (pathToMove, pathToTarget, interpolateForce){
     pathToMove.smooth({ type: 'continuous' });
 }
 
-function wobble (path, event){
+function wobble (path){
+    var deltaToAdd;
+
     for(var i = 0; i < path.segments.length; i++){
-        var deltaToAdd = (getBreath() + 0.01) * 6 + (Math.sin(Math.random()) + 1);
-        pathTarget.segments[i].point.y = circleValues.getY(i, deltaToAdd);
-        pathTarget.segments[i].point.x = circleValues.getX(i, deltaToAdd);
+        var wobbleValueX = Math.cos(Math.random() * Math.PI) * 5;
+        var wobbleValueY = Math.cos(Math.random() * Math.PI) * 5;
+
+        breathToAdd = getBreath();
+        pathTarget.segments[i].point.y = (((circleValues.getY(i) - CP.y) + wobbleValueX) * (1 + breathToAdd)) + CP.y;
+        pathTarget.segments[i].point.x = (((circleValues.getX(i) - CP.x) + wobbleValueY) * (1 + breathToAdd)) + CP.x;
     }
 }
 
@@ -163,7 +160,7 @@ view.onFrame = function(event){
     var displayBreathingBestMaxVolume = Math.round(breathing.bestMaxVolume*100000)/10000;
     output.innerHTML = "Breath duration:<br>" + breathing.delay + " / Best: " + breathing.bestDelay;
     output2.innerHTML = "Breath intensity:<br>" + displayBreathingMaxVolume + "/ Best: " + displayBreathingBestMaxVolume;
-    wobble(path, event);
+    wobble(pathTarget);
     interpolate(path, pathTarget, miscValues.force);
     interstectHandler();
 }
